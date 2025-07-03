@@ -62,8 +62,15 @@ class Answer(ComponentBase, ABC):
             res = stream
             answer = ""
             for ii, row in stream.iterrows():
-                answer += row.to_dict()["content"]
-                yield {"content": answer}
+                row_dict = row.to_dict()
+                answer += row_dict["content"]
+                # Preserve all fields from the DataFrame, not just content
+                result = {"content": answer}
+                # Copy any additional fields from the row
+                for key, value in row_dict.items():
+                    if key != "content":
+                        result[key] = value
+                yield result
         elif stream is not None:
             for st in stream():
                 res = st

@@ -16,6 +16,7 @@
 import json
 import time
 import traceback
+import pandas as pd
 from uuid import uuid4
 from agent.canvas import Canvas
 from api.db import TenantPermission
@@ -198,7 +199,13 @@ def completion(tenant_id, agent_id, question, session_id=None, stream=True, **kw
                     continue
                 for k in ans.keys():
                     final_ans[k] = ans[k]
-                ans = {"answer": ans["content"], "reference": ans.get("reference", []), "param": canvas.get_preset_param()}
+                # Preserve custom fields like extracted_data from components
+                preserved_ans = {"answer": ans["content"], "reference": ans.get("reference", []), "param": canvas.get_preset_param()}
+                # Copy any custom fields that don't conflict with standard fields
+                for key, value in ans.items():
+                    if key not in ["content", "reference", "answer", "param"]:
+                        preserved_ans[key] = value
+                ans = preserved_ans
                 ans = structure_answer(conv, ans, message_id, session_id)
                 yield "data:" + json.dumps({"code": 0, "message": "", "data": ans},
                                            ensure_ascii=False) + "\n\n"
@@ -223,12 +230,22 @@ def completion(tenant_id, agent_id, question, session_id=None, stream=True, **kw
             if answer.get("running_status"):
                 continue
             final_ans["content"] = "\n".join(answer["content"]) if "content" in answer else ""
+            #Add custom 'extracted_data' to the final_ans
+            if "extracted_data" in answer.columns and len(answer) > 0:
+                temp_json = answer.iloc[0]["extracted_data"]
+                final_ans["extracted_data"] = json.loads(temp_json)
+
             canvas.messages.append({"role": "assistant", "content": final_ans["content"], "id": message_id})
             if final_ans.get("reference"):
                 canvas.reference.append(final_ans["reference"])
             conv.dsl = json.loads(str(canvas))
 
+            # Preserve custom fields like extracted_data from components
             result = {"answer": final_ans["content"], "reference": final_ans.get("reference", []) , "param": canvas.get_preset_param()}
+            # Copy any custom fields that don't conflict with standard fields
+            for key, value in final_ans.items():
+                if key not in ["content", "reference", "answer", "param"]:
+                    result[key] = value
             result = structure_answer(conv, result, message_id, session_id)
             API4ConversationService.append_message(conv.id, conv.to_dict())
             yield result

@@ -1,0 +1,62 @@
+{
+    "营收": [
+        "financeRevenueAmount",
+        "financeRevenueAdditional",
+        "financeRevenueAmountTotal",
+        "financeRevenueEstimateAmount",
+        "revenuePendingAmount",
+        "proNonDepRevenueAmount",
+        "proRevenueAmount",
+        "proRevenueIncomeAmount",
+        "proRevenueOutAmount",
+        "revenueAdjust",
+        "revenueFinalAmount",
+        "revenueFinalAmountReimbursement"
+    ],
+    "收费": [
+        "financeChargeAmountTotal",
+        "financeChargeEstimateAmount",
+        "chargePendingAmount",
+        "proNonDepChargeAmount",
+        "proChargeAmount",
+        "proChargeIncomeAmount",
+        "proChargeOutAmount",
+        "chargeAdjust",
+        "chargeFinalAmount",
+        "chargeFinalAmountReimbursement",
+        "preCharge",
+        "shouldCharge",
+        "otherBillCharge",
+        "replacePayCharge",
+        "cashCharge",
+        "receipt"
+    ],
+    "财务口径": [
+        "financeRevenueAmountTotal",
+        "financeChargeAmountTotal"
+    ],
+    "生管口径": [
+        "proRevenueAmount",
+        "proChargeAmount"
+    ],
+    "考核口径": [
+        "revenueFinalAmount",
+        "revenueFinalAmountReimbursement",
+        "chargeFinalAmount",
+        "chargeFinalAmountReimbursement"
+    ],
+    "内部交易": [
+        "proRevenueIncomeAmount",
+        "proRevenueOutAmount",
+        "proChargeIncomeAmount",
+        "proChargeOutAmount"
+    ],
+    "暂估": [
+        "financeRevenueEstimateAmount",
+        "financeChargeEstimateAmount"
+    ],
+    "账面": [
+        "financeRevenueAmount",
+        "financeChargeAmountTotal"
+    ]
+}

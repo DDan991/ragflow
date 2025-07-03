@@ -51,6 +51,7 @@ from .email import Email, EmailParam
 from .iteration import Iteration, IterationParam
 from .iterationitem import IterationItem, IterationItemParam
 from .code import Code, CodeParam
+from .financial_extractor import FinancialExtractor, FinancialExtractorParam
 
 
 def component_class(class_name):
@@ -132,5 +133,7 @@ __all__ = [
     "EmailParam",
     "Code",
     "CodeParam",
+    "FinancialExtractor",
+    "FinancialExtractorParam",
     "component_class"
 ]
