@@ -100,19 +100,24 @@ class FinancialExtractorParam(GenerateParam):
         # Set default prompt - using {input} placeholder for Canvas integration
         self.prompt = """
 你是一个专业的财务信息提取助手。请分析用户的问题，提取其中的时间信息、财务指标和层级信息，并同时提供自然语言回答。
-请根据今年是2025年,，来判断用户问题中的时间信息。
+
+**重要提示：当前系统的查询时间条件仅支持按年度查询。如果您输入的是具体月份（如2025年6月）、具体日期（如2025年6月1日）或季度（如2025年第一季度）等更细粒度的时间信息，系统会自动将其转换为对应的年份（如统一转换为2025年）进行查询。**
+
+请根据今年是2025年，来判断用户问题中的时间信息。
+
 分析用户问题：{input}
+
 请按照以下JSON格式返回结果：
 {
   "extracted": {
-    "year": ["提取到的所有时间信息，每个时间作为列表中的一个元素（如：2023年、2023-Q1、2023年第一季度等），只返回年份的数字（如：2023，2024）。如果没有时间信息则返回空列表[]"],
-    "financial_indicator": ["提取到的所有财务指标，每个指标作为列表中的一个元素（如：营收账面、营收额外确认、收费财务暂估值、收费待分割、收费 最终考核口径、现供应链票据兑付等
-）。如果不是财务查询则返回空列表[]"],
-    "level": ["提取到的所有层级信息, 每个层级作为列表中的一个元素（如：主业，总承包，总承包勘测设计，总承包工程施工，其他，其他业务收入，投资收益，营业外收入，其他收益) ，如果没有明确层级则为空列表[]）"]
-    "department": ["提取到的所有部门信息（如数研院、科信部、电网公司等） ，每个部门作为列表中的一个元素 如果没有明确部门则返回空列表[]"]
+    "year": ["提取到的所有时间信息，每个时间作为列表中的一个元素（如：2023年、2023-Q1、2023年第一季度等），只返回年份的数字（如：2023，2024）。如果没有时间信息则返回空列表[]。注意：所有具体月份、日期、季度都会被转换为对应年份"],
+    "financial_indicator": ["提取到的所有财务指标，每个指标作为列表中的一个元素（如：合同、研发成本、营收账面、营收额外确认、收费财务暂估值、收费待分割、收费 最终考核口径、现供应链票据兑付等）。如果不是财务查询则返回空列表[]"],
+    "level": ["提取到的所有层级信息, 每个层级作为列表中的一个元素（如：主业，总承包，总承包勘测设计，总承包工程施工，其他，其他业务收入，投资收益，营业外收入，其他收益) ，如果没有明确层级则为空列表[]）"],
+    "department": ["提取到的所有部门信息（如数研院、能研院、科信部、电网公司、川能建等） ，每个部门作为列表中的一个元素 如果没有明确部门则返回空列表[]"]
   },
-  "answer": "对用户问题的自然语言回答，解释你识别到的信息并询问缺失的必要参数"
+  "answer": "对用户问题的自然语言回答，解释你识别到的信息并询问缺失的必要参数。如果用户查询了具体月份、日期或季度，需要说明系统会按整年数据返回结果"
 }
+
 注意：
 1. 时间信息要尽可能标准化，一个查询可能包含多个时间点（如：对比2023年和2024年）
 2. 财务指标要使用标准术语，一个查询可能涉及多个指标（如：营收账面和营收额外确认）
@@ -120,6 +125,7 @@ class FinancialExtractorParam(GenerateParam):
 4. 如果信息不完整，在answer中要说明需要补充的信息
 5. 必须严格按照JSON格式返回，不要添加其他文字, 确保字符串内的单引号不需要转义
 6. 如果上一轮的department的列表不为空，且本轮用户输入中又有department，则department只取这一次的部门信息
+7. 如果用户查询了月份、季度等细粒度时间，在answer中需要明确告知用户系统将返回对应年份的完整数据
 
 示例：
 - 用户输入："2022年和2023年的数研院的营收账面和营收额外确认的总承包数据"
@@ -127,6 +133,13 @@ class FinancialExtractorParam(GenerateParam):
 - financial_indicator应返回：["营收账面", "营收额外确认"]
 - department应返回：["数研院"]
 - level应返回：["总承包"]
+
+- 用户输入："2025年6月的营收账面数据"
+- year应返回：["2025"]
+- financial_indicator应返回：["营收账面"]
+- department应返回：[]
+- level应返回：[]
+- answer应包含："您查询的是2025年6月的数据，系统将为您返回2025年全年的营收账面数据"
 """
 
     def check(self):
@@ -461,7 +474,7 @@ class FinancialExtractor(Generate):
 
     def indicator_process_2(self, indicator_list, top_k=5, semantic_weight=0.3, 
                            lexical_weight=0.2, rerank_weight=0.5, 
-                           service_url="http://localhost:5000", timeout=20):
+                           service_url=None, timeout=20):
         """
         Process financial indicators using an external HTTP service with advanced search capabilities.
         Falls back to the original indicator_process method if the service is unavailable.
@@ -480,6 +493,9 @@ class FinancialExtractor(Generate):
         """
         if not indicator_list:
             return []
+        # Get service URL from environment variable if not provided
+        if service_url is None:
+            service_url = os.environ.get('FINANCIAL_EXTRACTOR_SERVICE_URL', 'http://localhost:5000')
         
         try:
             # Prepare request payload
@@ -542,7 +558,7 @@ class FinancialExtractor(Generate):
                 
                 logging.info(f"Successfully processed {len(processed_indicators)} indicators "
                            f"(filtered to category: '{first_category}'")
-                return category, processed_indicators
+                return first_category, processed_indicators
             
             else:
                 # HTTP request failed

@@ -1,0 +1,192 @@
+{
+  "answer": [],
+  "components": {
+    "begin": {
+      "obj": {
+        "component_name": "Begin",
+        "inputs": [],
+        "output": {
+          "content": {
+            "0": {
+              "content": "Hi! I'm your smart assistant. What can I do for you?"
+            }
+          }
+        },
+        "params": {}
+      },
+      "downstream": ["Answer:PinkClothsStrive"],
+      "upstream": []
+    },
+    "Answer:PinkClothsStrive": {
+      "obj": {
+        "component_name": "Answer",
+        "inputs": [],
+        "output": {
+          "content": "Hi! I'm your smart assistant. What can I do for you?"
+        },
+        "params": {}
+      },
+      "downstream": ["QASearch:SixtyCrabsFollow"],
+      "upstream": ["begin", "QASearch:SixtyCrabsFollow"]
+    },
+    "QASearch:SixtyCrabsFollow": {
+      "obj": {
+        "component_name": "QASearch",
+        "inputs": [],
+        "output": null,
+        "params": {
+          "search_service_url": "http://localhost:5001",
+          "search_top_k": 3,
+          "use_rerank": true,
+          "similarity_threshold": 0.7,
+          "search_timeout": 30,
+          "max_concat_rounds": 5,
+          "match_threshold": 0.8,
+          "llm_id": "Qwen/Qwen3-32B@SILICONFLOW",
+          "message_history_window_size": 12,
+          "parameters": [],
+          "prompt": "你是一个专业的问答助手。请根据用户的问题进行搜索和回答。\n\n用户问题：{input}\n\n请分析用户的问题，如果找到了匹配的问题和答案，请直接回答。如果没有找到匹配的问题，请提示用户重新描述问题。\n\n搜索结果：{search_results}\n\n请根据搜索结果为用户提供准确的回答。如果搜索结果中没有相关信息，请礼貌地告知用户。"
+        }
+      },
+      "downstream": ["Answer:PinkClothsStrive"],
+      "upstream": ["Answer:PinkClothsStrive"]
+    }
+  },
+  "embed_id": "",
+  "graph": {
+    "nodes": [
+      {
+        "data": {
+          "label": "Begin",
+          "name": "begin"
+        },
+        "dragging": false,
+        "id": "begin",
+        "measured": {
+          "height": 44,
+          "width": 200
+        },
+        "position": {
+          "x": -203.5,
+          "y": 160.5
+        },
+        "selected": false,
+        "sourcePosition": "left",
+        "targetPosition": "right",
+        "type": "beginNode"
+      },
+      {
+        "data": {
+          "form": {},
+          "label": "Answer",
+          "name": "Interact_0"
+        },
+        "dragging": false,
+        "id": "Answer:PinkClothsStrive",
+        "measured": {
+          "height": 44,
+          "width": 200
+        },
+        "position": {
+          "x": -31.5,
+          "y": 86
+        },
+        "selected": false,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "type": "logicNode"
+      },
+      {
+        "data": {
+          "form": {
+            "search_service_url": "http://localhost:5001",
+            "search_top_k": 3,
+            "use_rerank": true,
+            "similarity_threshold": 0.7,
+            "search_timeout": 30,
+            "max_concat_rounds": 5,
+            "match_threshold": 0.8,
+            "llm_id": "Qwen/Qwen3-32B@SILICONFLOW",
+            "message_history_window_size": 12,
+            "parameters": [],
+            "prompt": "你是一个专业的问答助手。请根据用户的问题进行搜索和回答。\n\n用户问题：{input}\n\n请分析用户的问题，如果找到了匹配的问题和答案，请直接回答。如果没有找到匹配的问题，请提示用户重新描述问题。\n\n搜索结果：{search_results}\n\n请根据搜索结果为用户提供准确的回答。如果搜索结果中没有相关信息，请礼貌地告知用户。"
+          },
+          "label": "QASearch",
+          "name": "QASearch_0"
+        },
+        "dragging": false,
+        "id": "QASearch:SixtyCrabsFollow",
+        "measured": {
+          "height": 104,
+          "width": 200
+        },
+        "position": {
+          "x": 200.5,
+          "y": 100.5
+        },
+        "selected": true,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "type": "qaSearchNode"
+      }
+    ],
+    "edges": [
+      {
+        "id": "xy-edge__begin-Answer:PinkClothsStrivec",
+        "markerEnd": "logo",
+        "source": "begin",
+        "style": {
+          "stroke": "rgb(202 197 245)",
+          "strokeWidth": 2
+        },
+        "target": "Answer:PinkClothsStrive",
+        "targetHandle": "c",
+        "type": "buttonEdge",
+        "zIndex": 1001
+      },
+      {
+        "id": "xy-edge__Answer:PinkClothsStriveb-QASearch:SixtyCrabsFollowc",
+        "markerEnd": "logo",
+        "source": "Answer:PinkClothsStrive",
+        "sourceHandle": "b",
+        "style": {
+          "stroke": "rgb(202 197 245)",
+          "strokeWidth": 2
+        },
+        "target": "QASearch:SixtyCrabsFollow",
+        "targetHandle": "c",
+        "type": "buttonEdge",
+        "zIndex": 1001
+      },
+      {
+        "id": "xy-edge__QASearch:SixtyCrabsFollowb-Answer:PinkClothsStrivec",
+        "markerEnd": "logo",
+        "source": "QASearch:SixtyCrabsFollow",
+        "sourceHandle": "b",
+        "style": {
+          "stroke": "rgb(202 197 245)",
+          "strokeWidth": 2
+        },
+        "target": "Answer:PinkClothsStrive",
+        "targetHandle": "c",
+        "type": "buttonEdge",
+        "zIndex": 1001
+      }
+    ]
+  },
+  "history": [
+    ["assistant", "Hi! I'm your smart assistant. What can I do for you?"]
+  ],
+  "messages": [
+    {
+      "content": "Hi! I'm your smart assistant. What can I do for you?",
+      "id": "f10fe77062e811f080d62db6e57ad3d6",
+      "role": "assistant"
+    }
+  ],
+  "path": [
+    ["begin"],
+    ["Answer:PinkClothsStrive"]
+  ],
+  "reference": []
+}

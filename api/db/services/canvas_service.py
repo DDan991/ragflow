@@ -250,6 +250,7 @@ def completion(tenant_id, agent_id, question, session_id=None, stream=True, **kw
             API4ConversationService.append_message(conv.id, conv.to_dict())
             yield result
             break
+        
 def completionOpenAI(tenant_id, agent_id, question, session_id=None, stream=True, **kwargs):
     """Main function for OpenAI-compatible completions, structured similarly to the completion function."""
     tiktokenenc = tiktoken.get_encoding("cl100k_base")

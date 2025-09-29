@@ -52,6 +52,7 @@ from .iteration import Iteration, IterationParam
 from .iterationitem import IterationItem, IterationItemParam
 from .code import Code, CodeParam
 from .financial_extractor import FinancialExtractor, FinancialExtractorParam
+from .qa_search import QASearch, QASearchParam
 
 
 def component_class(class_name):
@@ -135,5 +136,7 @@ __all__ = [
     "CodeParam",
     "FinancialExtractor",
     "FinancialExtractorParam",
+    "QASearch",
+    "QASearchParam",
     "component_class"
 ]

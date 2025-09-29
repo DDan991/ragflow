@@ -120,6 +120,7 @@ class Invoke(ComponentBase, ABC):
                                          headers=headers,
                                          proxies=proxies,
                                          timeout=self._param.timeout)
+                temp =json.loads(response.text)
             else:
                 response = requests.post(url=url,
                                          data=args,
@@ -129,4 +130,4 @@ class Invoke(ComponentBase, ABC):
             if self._param.clean_html:
                 sections = HtmlParser()(None, response.content)
                 return Invoke.be_output("\n".join(sections))
-            return Invoke.be_output(response.text)
+            return Invoke.be_output(json.loads(response.text)["answer"])
